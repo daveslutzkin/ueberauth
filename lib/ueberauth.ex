@@ -178,13 +178,11 @@ defmodule Ueberauth do
     {all_providers, _opts} = Keyword.pop(opts, :providers)
     all_providers = Enum.into(all_providers, %{})
 
-    if provider_list == :all do
-      providers = all_providers
-    else
-      {providers, _} = Map.split(all_providers, provider_list)
-    end
+    providers = if provider_list == :all,
+      do:   all_providers,
+      else: Map.take(all_providers, provider_list)
 
-    Enum.reduce providers, %{}, fn {name, {module, opts}} = strategy, acc ->
+    Enum.reduce providers, %{}, fn {_name, {module, opts}} = strategy, acc ->
       request_path = request_path(base_path, strategy)
       callback_path = callback_path(base_path, strategy)
       callback_methods = callback_methods(opts)
